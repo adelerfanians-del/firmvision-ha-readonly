@@ -55,4 +55,8 @@ class FermvisionApi:
             ability = await self.read("get.system.ability")
         except FermvisionApiError as error:
             ability = {"error": error.code, "content": "", "unsupported": True}
-        return {"qrcode": qrcode, "attach": attach, "ability": ability}
+        try:
+            network = await self.read("get.network.config")
+        except FermvisionApiError as error:
+            network = {"error": error.code, "content": "", "unsupported": True}
+        return {"qrcode": qrcode, "attach": attach, "ability": ability, "network": network}
