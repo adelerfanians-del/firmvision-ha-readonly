@@ -1,0 +1,18 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Fermvision intercom",
+        "description": "Read-only local monitoring. Gate control is not included.",
+        "data": {
+          "host": "IP address or hostname",
+          "password": "Device password",
+          "port": "HTTP port"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to read the Fermvision device."
+    }
+  }
+}

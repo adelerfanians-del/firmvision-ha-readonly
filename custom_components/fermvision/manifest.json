@@ -1,0 +1,11 @@
+{
+  "domain": "fermvision",
+  "name": "Fermvision Intercom (read-only)",
+  "version": "0.1.0",
+  "documentation": "https://github.com/adelerfanians-del/firmvision-ha-readonly",
+  "issue_tracker": "https://github.com/adelerfanians-del/firmvision-ha-readonly/issues",
+  "codeowners": [],
+  "config_flow": true,
+  "iot_class": "local_polling",
+  "requirements": []
+}
