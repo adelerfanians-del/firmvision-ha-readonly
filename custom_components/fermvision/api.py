@@ -8,7 +8,9 @@ from .safe_xml import build_read_request, parse_response
 
 
 class FermvisionApiError(Exception):
-    pass
+    def __init__(self, message: str, code: int | None = None) -> None:
+        super().__init__(message)
+        self.code = code
 
 
 class FermvisionApi:
@@ -35,10 +37,18 @@ class FermvisionApi:
         except ValueError as error:
             raise FermvisionApiError("Fermvision returned an invalid response") from error
         if result["error"] not in (None, 0):
-            raise FermvisionApiError(f"Fermvision read rejected with error {result['error']}")
+            raise FermvisionApiError(
+                f"Fermvision read rejected with error {result['error']}",
+                result["error"],
+            )
         return result
 
     async def read_all(self) -> dict[str, Any]:
         qrcode = await self.read("get.device.qrcode")
-        attach = await self.read("get.device.attachInfo")
+        try:
+            attach = await self.read("get.device.attachInfo")
+        except FermvisionApiError as error:
+            # Some firmware rejects attachInfo while still supporting qrcode.
+            # Keep the device online and expose channel count as unavailable.
+            attach = {"error": error.code, "content": "", "unsupported": True}
         return {"qrcode": qrcode, "attach": attach}
