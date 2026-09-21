@@ -14,6 +14,9 @@ class SafeXmlTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             build_read_request("set.device.opendoor", "synthetic")
 
+        ability = build_read_request("get.system.ability", "synthetic")
+        self.assertIn("<command>get.system.ability</command>", ability)
+
     def test_error_response_is_not_success(self):
         parsed = parse_response(
             "<envelope><body><command>get.device.qrcode</command>"

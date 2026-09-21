@@ -51,4 +51,8 @@ class FermvisionApi:
             # Some firmware rejects attachInfo while still supporting qrcode.
             # Keep the device online and expose channel count as unavailable.
             attach = {"error": error.code, "content": "", "unsupported": True}
-        return {"qrcode": qrcode, "attach": attach}
+        try:
+            ability = await self.read("get.system.ability")
+        except FermvisionApiError as error:
+            ability = {"error": error.code, "content": "", "unsupported": True}
+        return {"qrcode": qrcode, "attach": attach, "ability": ability}

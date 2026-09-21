@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -17,6 +19,7 @@ async def async_setup_entry(
     async_add_entities([
         FermvisionDeviceSensor(coordinator, entry),
         FermvisionChannelsSensor(coordinator, entry),
+        FermvisionAbilitySensor(coordinator, entry),
     ])
 
 
@@ -49,3 +52,27 @@ class FermvisionChannelsSensor(CoordinatorEntity[FermvisionCoordinator], SensorE
         if marker not in content:
             return None
         return content.split(marker, 1)[1].split("</channel-num>", 1)[0]
+
+
+class FermvisionAbilitySensor(CoordinatorEntity[FermvisionCoordinator], SensorEntity):
+    _attr_name = "System ability response"
+    _attr_icon = "mdi:shield-search"
+
+    def __init__(self, coordinator, entry):
+        super().__init__(coordinator)
+        self._attr_unique_id = f"{entry.entry_id}_system_ability"
+
+    @property
+    def native_value(self):
+        result = self.coordinator.data.get("ability", {})
+        return "received" if result.get("success") else "unsupported-or-unavailable"
+
+    @property
+    def extra_state_attributes(self):
+        content = self.coordinator.data.get("ability", {}).get("content", "")
+        return {
+            "response_length": len(content),
+            "contains_ability_24": bool(re.search(r"(?:ability|id|type)[^0-9]{0,12}24\b", content, re.I)),
+            "contains_ability_86": bool(re.search(r"(?:ability|id|type)[^0-9]{0,12}86\b", content, re.I)),
+            "contains_ability_124": bool(re.search(r"(?:ability|id|type)[^0-9]{0,12}124\b", content, re.I)),
+        }

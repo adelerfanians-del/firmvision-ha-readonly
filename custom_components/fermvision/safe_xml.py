@@ -14,7 +14,7 @@ def encode_password(password: str) -> str:
 
 
 def build_read_request(command: str, password: str) -> str:
-    if command not in {"get.device.qrcode", "get.device.attachInfo"}:
+    if command not in {"get.device.qrcode", "get.device.attachInfo", "get.system.ability"}:
         raise ValueError("only read-only commands are permitted")
     encoded = encode_password(password)
     return (
